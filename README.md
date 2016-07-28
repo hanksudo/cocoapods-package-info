@@ -5,7 +5,8 @@ Know project's Cocoapod packages easily
 ## Usage
 
 ```bash
-python podi.py
+python podi.py Podfile
+python podi.py Podfile | tee -a output.txt
 ```
 
 ### Result

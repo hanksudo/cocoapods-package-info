@@ -1,3 +1,4 @@
+import sys
 import re
 import requests
 COCOAPOD_SPEC_URL = "https://raw.githubusercontent.com/CocoaPods/Specs/master/Specs/{pkg_name}/{version}/{pkg_name}.podspec.json"
@@ -12,6 +13,7 @@ def fetch_info_from_spec(pkg_name, version):
     ))
     if r.ok:
         print "{} - {}".format(pkg_name, r.json()["summary"])
+        sys.stdout.flush()
     else:
         digits = version.split(".")
         if len(digits) < 3:
@@ -31,10 +33,11 @@ def fetch_info_from_api(pkg_name):
         package=pkg_name,
         summary=summary.replace("<p>", "").replace("</p>", "")
     )
+    sys.stdout.flush()
 
 
-def main():
-    with open("Podfile") as f:
+def main(file):
+    with open(file) as f:
         lines = f.read()
         for line in lines.split("\n"):
             for PATTERN in PATTERNS:
@@ -55,5 +58,11 @@ def main():
                     break
 
 
+def usage():
+    print "$ python podi.py Podfile"
+
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 1:
+        usage()
+    else:
+        main(sys.argv[1])
