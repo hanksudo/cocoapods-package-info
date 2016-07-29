@@ -12,7 +12,9 @@ def fetch_info_from_spec(pkg_name, version):
         pkg_name=pkg_name
     ))
     if r.ok:
-        print "{} - {}".format(pkg_name, r.json()["summary"])
+        json_data = r.json()
+        print "- [{}]({})\n{}".format(pkg_name, json_data["homepage"], json_data["summary"])
+        print
         sys.stdout.flush()
     else:
         digits = version.split(".")
@@ -28,6 +30,10 @@ def fetch_info_from_api(pkg_name):
     r = requests.get(API_URL.format(
         pkg_name=pkg_name
     ))
+    matched = re.match(r"http:\/\/cocoadocs.org\/docsets\/\w+\/([\w.]+)/README\.html", r.json()["cocoadocs"]["rendered_readme_url"])
+    if matched:
+        return fetch_info_from_spec(pkg_name, matched.groups()[0])
+
     summary = r.json()["cocoadocs"]["rendered_summary"]
     print "{package} - {summary}".format(
         package=pkg_name,
